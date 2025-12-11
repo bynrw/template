@@ -18,7 +18,9 @@ import {
     DialogActions,
     Card,
     InputAdornment,
-    Tooltip
+    Tooltip,
+    Chip,
+    Typography
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Visibility as VisibilityIcon, Search as SearchIcon, Close as CloseIcon } from '@mui/icons-material';
 import userService from '../services/userService';
@@ -299,79 +301,103 @@ const Benutzerliste = () => {
                     <Table sx={{ minWidth: 750 }}>
                         <TableHead>
                             <TableRow sx={{ backgroundColor: '#4169E1' }}>
-                                <TableCell sx={{ color: '#FFFFFF', fontWeight: 700 }}>ID</TableCell>
+                                <TableCell sx={{ color: '#FFFFFF', fontWeight: 700 }}>Benutzername</TableCell>
                                 <TableCell sx={{ color: '#FFFFFF', fontWeight: 700 }}>Vorname</TableCell>
                                 <TableCell sx={{ color: '#FFFFFF', fontWeight: 700 }}>Nachname</TableCell>
                                 <TableCell sx={{ color: '#FFFFFF', fontWeight: 700 }}>Email</TableCell>
+                                <TableCell sx={{ color: '#FFFFFF', fontWeight: 700 }}>Organisation</TableCell>
+                                <TableCell sx={{ color: '#FFFFFF', fontWeight: 700 }}>Rolle</TableCell>
                                 <TableCell sx={{ color: '#FFFFFF', fontWeight: 700 }}>Aktionen</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {users.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} align="center" sx={{ py: 4, color: '#9E9E9E' }}>
+                                    <TableCell colSpan={7} align="center" sx={{ py: 4, color: '#9E9E9E' }}>
                                         <Box sx={{ fontSize: 14 }}>Keine Benutzer gefunden</Box>
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                users.map((user, index) => (
-                                    <TableRow
-                                        key={user.userUid}
-                                        hover
-                                        sx={{
-                                            backgroundColor: index % 2 === 0 ? '#F5F7FA' : '#FFFFFF',
-                                            '&:hover': {
-                                                backgroundColor: '#E8EEF7',
-                                            },
-                                            transition: 'all 0.3s ease',
-                                        }}
-                                    >
-                                        <TableCell sx={{ fontFamily: 'monospace', fontSize: 12, color: '#666' }}>
-                                            {user.userUid.substring(0, 8)}...
-                                        </TableCell>
-                                        <TableCell sx={{ fontWeight: 500 }}>{user.firstname || user.firstName || '-'}</TableCell>
-                                        <TableCell sx={{ fontWeight: 500 }}>{user.lastname || user.lastName || '-'}</TableCell>
-                                        <TableCell sx={{ color: '#4169E1', fontSize: 13 }}>{user.mail || user.email || '-'}</TableCell>
-                                        <TableCell>
-                                            <Box sx={{ display: 'flex', gap: 0.5 }}>
-                                                <Tooltip title="Details anzeigen">
-                                                    <Button
+                                users.map((user, index) => {
+                                    // Get first organization and its first role
+                                    const firstOrg = user.organisations && user.organisations.length > 0 ? user.organisations[0] : null;
+                                    const orgName = firstOrg ? firstOrg.orgName : '-';
+                                    const firstRole = firstOrg && firstOrg.roles && firstOrg.roles.length > 0 ? firstOrg.roles[0].roleName : '-';
+
+                                    return (
+                                        <TableRow
+                                            key={user.userUid}
+                                            hover
+                                            sx={{
+                                                backgroundColor: index % 2 === 0 ? '#F5F7FA' : '#FFFFFF',
+                                                '&:hover': {
+                                                    backgroundColor: '#E8EEF7',
+                                                },
+                                                transition: 'all 0.3s ease',
+                                            }}
+                                        >
+                                            <TableCell sx={{ fontWeight: 600, color: '#4169E1' }}>@{user.username || '-'}</TableCell>
+                                            <TableCell sx={{ fontWeight: 500 }}>{user.firstname || user.firstName || '-'}</TableCell>
+                                            <TableCell sx={{ fontWeight: 500 }}>{user.lastname || user.lastName || '-'}</TableCell>
+                                            <TableCell sx={{ color: '#4169E1', fontSize: 13 }}>{user.mail || user.email || '-'}</TableCell>
+                                            <TableCell sx={{ fontSize: 13 }}>{orgName}</TableCell>
+                                            <TableCell>
+                                                {firstRole !== '-' && (
+                                                    <Chip
+                                                        label={firstRole}
                                                         size="small"
-                                                        startIcon={<VisibilityIcon />}
-                                                        onClick={() => handleViewDetails(user.userUid)}
-                                                        variant="outlined"
                                                         sx={{
-                                                            color: '#4169E1',
-                                                            borderColor: '#4169E1',
-                                                            '&:hover': {
-                                                                backgroundColor: '#E8EEF7',
-                                                                borderColor: '#2E4CB8',
-                                                            },
+                                                            backgroundColor: '#4169E1',
+                                                            color: '#FFFFFF',
+                                                            fontWeight: 600,
                                                         }}
-                                                    >
-                                                        Details
-                                                    </Button>
-                                                </Tooltip>
-                                                <Tooltip title="Benutzer löschen">
-                                                    <Button
-                                                        size="small"
-                                                        startIcon={<DeleteIcon />}
-                                                        color="error"
-                                                        variant="outlined"
-                                                        onClick={() => handleOpenDeleteDialog(user.userUid)}
-                                                        sx={{
-                                                            '&:hover': {
-                                                                backgroundColor: '#FFEBEE',
-                                                            },
-                                                        }}
-                                                    >
-                                                        Löschen
-                                                    </Button>
-                                                </Tooltip>
-                                            </Box>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
+                                                    />
+                                                )}
+                                                {firstRole === '-' && (
+                                                    <Typography variant="body2" sx={{ color: '#9E9E9E' }}>-</Typography>
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                                    <Tooltip title="Details anzeigen">
+                                                        <Button
+                                                            size="small"
+                                                            startIcon={<VisibilityIcon />}
+                                                            onClick={() => handleViewDetails(user.userUid)}
+                                                            variant="outlined"
+                                                            sx={{
+                                                                color: '#4169E1',
+                                                                borderColor: '#4169E1',
+                                                                '&:hover': {
+                                                                    backgroundColor: '#E8EEF7',
+                                                                    borderColor: '#2E4CB8',
+                                                                },
+                                                            }}
+                                                        >
+                                                            Details
+                                                        </Button>
+                                                    </Tooltip>
+                                                    <Tooltip title="Benutzer löschen">
+                                                        <Button
+                                                            size="small"
+                                                            startIcon={<DeleteIcon />}
+                                                            color="error"
+                                                            variant="outlined"
+                                                            onClick={() => handleOpenDeleteDialog(user.userUid)}
+                                                            sx={{
+                                                                '&:hover': {
+                                                                    backgroundColor: '#FFEBEE',
+                                                                },
+                                                            }}
+                                                        >
+                                                            Löschen
+                                                        </Button>
+                                                    </Tooltip>
+                                                </Box>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })
                             )}
                         </TableBody>
                     </Table>
