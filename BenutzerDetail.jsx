@@ -192,28 +192,7 @@ const BenutzerDetail = ({ user }) => {
                     </>
                 )}
 
-                {/* UID */}
-                <Grid item xs={12}>
-                    <Divider sx={{ my: 2 }} />
-                    <TextField
-                        fullWidth
-                        label="Benutzer-ID (UID)"
-                        value={user.userUid || ''}
-                        InputProps={{ readOnly: true }}
-                        variant="outlined"
-                        size="small"
-                        sx={{
-                            '& .MuiOutlinedInput-root': {
-                                backgroundColor: '#F5F7FA',
-                            },
-                            '& .MuiOutlinedInput-input': {
-                                fontFamily: 'monospace',
-                                fontSize: 12,
-                                color: '#999',
-                            },
-                        }}
-                    />
-                </Grid>
+
             </Grid>
         </Box>
     );
